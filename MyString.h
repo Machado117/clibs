@@ -21,18 +21,23 @@ String CreateEmptyString();
 void DestroyString(String string);
 ErrorCode GrowString(String string, int new_minimum_capacity);
 char *CString(String string);
-ErrorCode AddCharString(String string, char c);
-ErrorCode AddTextString(String string, char *text, int text_length);
-ErrorCode AddString(String string_dest, String string_src);
+
+ErrorCode AppendCharToString(String string, char c);
+
+ErrorCode AppendTextToString(String string, char *text, int text_length);
+
+ErrorCode AppendString(String string_dest, String string_src);
 int FindTextString(String string, int index, char *text, int text_length);
+
+int FindSubstring(String string, int index, String substring);
 void RemoveTextString(String string, int index, int length);
 
-// If length
-String GetSubString(String string, int index, int length);
+String GetSubstring(String string, int index, int length);
 void ClearString(String string);
 int LengthString(String string);
 Bool EqualString(String string1, String string2);
 Bool EqualTextString(String string, char *text, int text_length);
-char GetCharString(String string, int index);
+
+char GetCharFromString(String string, int index);
 
 #endif //CLIBS_MYSTRING_H

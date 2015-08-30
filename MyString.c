@@ -80,14 +80,14 @@ char *CString(String string) {
     return string->string_data_;
 }
 
-ErrorCode AddCharString(String string, char c) {
+ErrorCode AppendCharToString(String string, char c) {
     ErrorCode error_code = GrowString(string, string->length_ + 1);
     if (error_code != SUCCESS) return error_code;
     string->string_data_[string->length_++] = c;
     return SUCCESS;
 }
 
-ErrorCode AddTextString(String string, char *text, int text_length) {
+ErrorCode AppendTextToString(String string, char *text, int text_length) {
     if (text_length >= 0) {
         ErrorCode error_code = GrowString(string, string->length_ + text_length);
         if (error_code != SUCCESS) return error_code;
@@ -98,7 +98,7 @@ ErrorCode AddTextString(String string, char *text, int text_length) {
     return ERROR;
 }
 
-ErrorCode AddString(String string_dest, String string_src) {
+ErrorCode AppendString(String string_dest, String string_src) {
     ErrorCode error_code = GrowString(string_dest, string_dest->length_ + string_src->length_);
     if (error_code != SUCCESS) return error_code;
     memcpy(string_dest->string_data_ + string_dest->length_, string_src->string_data_,
@@ -113,6 +113,20 @@ int FindTextString(String string, int index, char *text, int text_length) {
     if (index >= 0 && text_length <= string_length) {
         for (i = index; i <= string_length - text_length; i++) {
             if (!strncmp(CString(string) + i, text, (size_t) text_length)) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+int FindSubstring(String string, int index, String substring) {
+    int i;
+    int string_length = string->length_;
+    int substring_length = substring->length_;
+    if (index >= 0 && substring_length <= string_length) {
+        for (i = index; i <= string_length - substring_length; i++) {
+            if (!memcmp(string->string_data_ + i, substring->string_data_, (size_t) substring_length)) {
                 return i;
             }
         }
@@ -137,7 +151,7 @@ void RemoveTextString(String string, int index, int length) {
     }
 }
 
-String GetSubString(String string, int index, int length) {
+String GetSubstring(String string, int index, int length) {
     if (index >= string->length_ || index < 0 || length < -1) {
         return CreateEmptyString();
     }
@@ -173,7 +187,7 @@ Bool EqualTextString(String string, char *text, int text_length) {
     return !memcmp(string->string_data_, text, (size_t) string->length_);
 }
 
-char GetCharString(String string, int index) {
+char GetCharFromString(String string, int index) {
     if (index < string->length_ && index >= 0) {
         return string->string_data_[index];
     }
