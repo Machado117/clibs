@@ -26,6 +26,8 @@ ErrorCode AddTextString(String string, char *text, int text_length);
 ErrorCode AddString(String string_dest, String string_src);
 int FindTextString(String string, int index, char *text, int text_length);
 void RemoveTextString(String string, int index, int length);
+
+// If length
 String GetSubString(String string, int index, int length);
 void ClearString(String string);
 int LengthString(String string);
