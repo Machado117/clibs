@@ -13,9 +13,7 @@
 
 String CreateString(int minimum_capacity) {
     String string;
-    if (!(string = malloc(sizeof(struct String)))) {
-        return NULL;
-    }
+    if (!(string = malloc(sizeof(struct String)))) return NULL;
     size_t allocation_size = DEFAULT_CAPACITY;
     while (minimum_capacity > allocation_size) {
         allocation_size = (size_t) ceil(allocation_size * GROWTH_FACTOR);
@@ -35,9 +33,7 @@ String CreateString(int minimum_capacity) {
 String CreateStringFromText(char *text, int text_length) {
     String string;
 
-    if (!(string = CreateString(text_length))) {
-        return NULL;
-    }
+    if (!(string = CreateString(text_length))) return NULL;
     memcpy(string->string_data_, text, (size_t) text_length);
     string->length_ = text_length;
     return string;
@@ -73,9 +69,7 @@ ErrorCode GrowString(String string, int new_minimum_capacity) {
 }
 
 char *CString(String string) {
-    if (GrowString(string, string->length_ + 1) == ERROR) {
-        return NULL;
-    }
+    if (GrowString(string, string->length_ + 1) == ERROR) return NULL;
     string->string_data_[string->length_] = '\0';
     return string->string_data_;
 }
@@ -88,23 +82,17 @@ ErrorCode AppendCharToString(String string, char c) {
 }
 
 ErrorCode AppendTextToString(String string, char *text, int text_length) {
-    if (text_length >= 0) {
-        ErrorCode error_code = GrowString(string, string->length_ + text_length);
-        if (error_code != SUCCESS) return error_code;
-        memcpy(string->string_data_ + string->length_, text, (size_t) text_length);
-        string->length_ += text_length;
-        return SUCCESS;
-    }
-    return ERROR;
+    if (!text_length) return SUCCESS;
+    if (text_length < 0) return ERROR;
+    ErrorCode error_code = GrowString(string, string->length_ + text_length);
+    if (error_code != SUCCESS) return error_code;
+    memcpy(string->string_data_ + string->length_, text, (size_t) text_length);
+    string->length_ += text_length;
+    return SUCCESS;
 }
 
 ErrorCode AppendString(String string_dest, String string_src) {
-    ErrorCode error_code = GrowString(string_dest, string_dest->length_ + string_src->length_);
-    if (error_code != SUCCESS) return error_code;
-    memcpy(string_dest->string_data_ + string_dest->length_, string_src->string_data_,
-           (size_t) string_src->length_);
-    string_dest->length_ += string_src->length_;
-    return SUCCESS;
+    return AppendTextToString(string_dest, string_src->string_data_, string_src->length_);
 }
 
 int FindTextString(String string, int index, char *text, int text_length) {
@@ -112,7 +100,7 @@ int FindTextString(String string, int index, char *text, int text_length) {
     int string_length = string->length_;
     if (index >= 0 && text_length <= string_length) {
         for (i = index; i <= string_length - text_length; i++) {
-            if (!strncmp(CString(string) + i, text, (size_t) text_length)) {
+            if (!memcmp(string->string_data_ + i, text, (size_t) text_length)) {
                 return i;
             }
         }
@@ -121,17 +109,7 @@ int FindTextString(String string, int index, char *text, int text_length) {
 }
 
 int FindSubstring(String string, int index, String substring) {
-    int i;
-    int string_length = string->length_;
-    int substring_length = substring->length_;
-    if (index >= 0 && substring_length <= string_length) {
-        for (i = index; i <= string_length - substring_length; i++) {
-            if (!memcmp(string->string_data_ + i, substring->string_data_, (size_t) substring_length)) {
-                return i;
-            }
-        }
-    }
-    return -1;
+    return FindTextString(string, index, substring->string_data_, substring->length_);
 }
 
 void RemoveTextString(String string, int index, int length) {
@@ -177,14 +155,13 @@ int LengthString(String string) {
     return string->length_;
 }
 
-Bool EqualString(String string1, String string2) {
-    if (string1->length_ != string2->length_) return false;
-    return !memcmp(string1->string_data_, string1->string_data_, (size_t) string1->length_);
-}
-
 Bool EqualTextString(String string, char *text, int text_length) {
     if (string->length_ != text_length) return false;
     return !memcmp(string->string_data_, text, (size_t) string->length_);
+}
+
+Bool EqualString(String string1, String string2) {
+    return EqualTextString(string1, string2->string_data_, string2->length_);
 }
 
 char GetCharFromString(String string, int index) {

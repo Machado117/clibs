@@ -45,9 +45,9 @@ void ClearString(String string);
 
 int LengthString(String string);
 
-Bool EqualString(String string1, String string2);
-
 Bool EqualTextString(String string, char *text, int text_length);
+
+Bool EqualString(String string1, String string2);
 
 char GetCharFromString(String string, int index);
 
