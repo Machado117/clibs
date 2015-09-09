@@ -15,15 +15,17 @@ struct String {
 
 typedef struct String *String;
 
-String CreateString(int minimum_capacity);
+static String create_string(int minimum_capacity);
 
-String CreateStringFromText(char *text, int text_length);
+String CreateString(char *text, int text_length);
+
+String CreateStringCopy(String string);
 
 String CreateEmptyString();
 
 void DestroyString(String string);
 
-ErrorCode GrowString(String string, int new_minimum_capacity);
+static ErrorCode GrowString(String string, int new_minimum_capacity);
 
 char *CString(String string);
 
@@ -50,5 +52,9 @@ Bool EqualTextString(String string, char *text, int text_length);
 Bool EqualString(String string1, String string2);
 
 char GetCharFromString(String string, int index);
+
+static int get_allocation_size(int current_allocation_size, int minimum_capacity);
+
+void testMyString();
 
 #endif //CLIBS_MYSTRING_H
